@@ -11,3 +11,4 @@ torch>=2.2.0
 torchvision>=0.17.0
 faiss-cpu>=1.7.4
 opencv-python-headless>=4.9.0.80
+pillow>=10.3.0
