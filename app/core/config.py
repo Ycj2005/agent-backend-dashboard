@@ -3,7 +3,7 @@ from typing import Optional
 
 class Settings(BaseSettings):
     MONGODB_URI: str = "mongodb://localhost:27017"
-    DATABASE_NAME: str = "routing_machine"
+    DATABASE_NAME: str = "agentsdb"
     NEXT_PUBLIC_MAPPLS_API_KEY: Optional[str] = None
     MAPPLS_API_KEY: Optional[str] = None
     CLOUDINARY_CLOUD_NAME: Optional[str] = None

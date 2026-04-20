@@ -266,7 +266,7 @@ async def update_lived_route(agent_id: str, payload: dict):
     return {"status": "success", "message": "Lived route updated"}
 
 
-@router.post("/", response_model=dict, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def create_agent(agent: AgentCreate):
     try:
         image_url = ""
@@ -293,7 +293,7 @@ async def create_agent(agent: AgentCreate):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/", response_model=dict)
+@router.get("", response_model=dict)
 async def get_agents():
     try:
         agent_coll = get_collection("agents")

@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 router = APIRouter(prefix="/customers", tags=["Customers"])
 
-@router.post("/", response_model=dict)
+@router.post("", response_model=dict)
 async def create_customer(customer: CustomerCreate):
     try:
         # Parse location string "lat, lng"
@@ -55,7 +55,7 @@ async def create_customer(customer: CustomerCreate):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/", response_model=dict)
+@router.get("", response_model=dict)
 async def get_customers():
     try:
         customer_coll = get_collection("customers")

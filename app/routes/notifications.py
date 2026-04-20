@@ -7,7 +7,7 @@ from bson import ObjectId
 router = APIRouter(prefix="/notifications", tags=["Notifications"])
 
 
-@router.get("/", response_model=dict)
+@router.get("", response_model=dict)
 async def get_notifications():
     try:
         notif_coll = get_collection("notifications")

@@ -21,7 +21,7 @@ async def close_mongo_connection():
         logger.info("MongoDB connection closed.")
 
 def get_database():
-    return db.client.get_default_database()
+    return db.client.get_database(settings.DATABASE_NAME)
 
 def get_collection(collection_name: str):
     return get_database()[collection_name]

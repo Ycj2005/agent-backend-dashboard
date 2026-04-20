@@ -91,7 +91,6 @@ async def optimize_route(points: List[Point], api_key: str):
     return current_order
 
 @router.post("")
-@router.post("/")
 async def get_route(req: RouteRequest):
     logger.info(f"[ROUTE] Received request for {len(req.points)} points")
     if len(req.points) < 2:
