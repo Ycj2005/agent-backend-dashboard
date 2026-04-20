@@ -27,9 +27,17 @@ app = FastAPI(
 )
 
 # Allow CORS for NextJS frontends
+origins = [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "https://agent-dashboard-six-indol.vercel.app",
+    "https://agent-side-application.vercel.app",
+    "https://agent-backend-dashboard-production.up.railway.app",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, restrict to actual Next.js domains
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
