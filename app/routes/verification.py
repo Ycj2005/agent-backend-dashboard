@@ -17,12 +17,24 @@ import cv2
 from facenet_pytorch import MTCNN, InceptionResnetV1
 from PIL import Image
 
-# Initialize models
+# Lazy model initialization - loaded on first request to avoid flooding
+# Railway logs with download progress bars ("99.9%...") at container start.
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-mtcnn = MTCNN(image_size=160, margin=20, device=DEVICE)
-model = InceptionResnetV1(pretrained='vggface2').eval().to(DEVICE)
+_mtcnn = None
+_model = None
 
 logger = logging.getLogger(__name__)
+
+
+def _get_models():
+    """Lazy-load face recognition models on first use."""
+    global _mtcnn, _model
+    if _mtcnn is None or _model is None:
+        logger.info("Loading face recognition models (first request)...")
+        _mtcnn = MTCNN(image_size=160, margin=20, device=DEVICE)
+        _model = InceptionResnetV1(pretrained='vggface2').eval().to(DEVICE)
+        logger.info("Face recognition models loaded.")
+    return _mtcnn, _model
 
 router = APIRouter(prefix="/verification", tags=["Agent Verification"])
 
@@ -47,15 +59,16 @@ def save_base64_to_temp(b64_str: str, suffix=".jpg") -> str:
     return path
 
 def get_embedding(image_path):
+    mtcnn, model = _get_models()
     img = Image.open(image_path).convert('RGB')
     face = mtcnn(img)
     if face is None:
         return None
-    
+
     face = face.unsqueeze(0).to(DEVICE)
     with torch.no_grad():
         emb = model(face).cpu().numpy().flatten()
-    
+
     # L2 Normalization
     norm = np.linalg.norm(emb)
     if norm > 0:

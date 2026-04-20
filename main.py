@@ -9,6 +9,10 @@ from app.routes import agents, customers, auth, verification, route, notificatio
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Suppress noisy third-party library logs to avoid Railway's 500 logs/sec rate limit
+for _noisy_lib in ["torch", "torchvision", "facenet_pytorch", "PIL", "httpx", "urllib3", "asyncio"]:
+    logging.getLogger(_noisy_lib).setLevel(logging.WARNING)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

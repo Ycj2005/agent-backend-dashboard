@@ -25,11 +25,17 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu && \
     pip install --no-cache-dir -r requirements.txt
 
+# Pre-download the face recognition model weights at BUILD time so the
+# container never downloads them at startup (which caused 99.9% log spam
+# and Railway's rate limit → 502 Bad Gateway).
+RUN python -c "from facenet_pytorch import InceptionResnetV1; InceptionResnetV1(pretrained='vggface2')" 2>/dev/null || true
+
 # Copy project files
 COPY . .
 
-# Expose the port the app runs on
-EXPOSE 8000
+# Expose the port Railway injects via $PORT (defaults to 8080)
+EXPOSE 8080
 
-# Start the application using uvicorn
-CMD sh -c "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"
+# Use gunicorn with uvicorn workers for production stability.
+# --timeout 120 prevents 502s when the face model loads on first request.
+CMD sh -c "gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:${PORT:-8080} --workers 1 --timeout 120 --log-level warning"
