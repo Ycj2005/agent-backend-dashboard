@@ -1,3 +1,32 @@
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libgl1 \
+    libglib2.0-0 \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY backend/requirements.txt .
+
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu && \
+    pip install --no-cache-dir -r requirements.txt
+
+RUN python -c "from facenet_pytorch import InceptionResnetV1; InceptionResnetV1(pretrained='vggface2')" 2>/dev/null || true
+
+COPY backend/ .
+
+EXPOSE 8080
+
+CMD ["sh", "-c", "gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:${PORT:-8080} --workers 1 --timeout 300 --preload --log-level info"]
+
 # # Use a slim Python image
 # FROM python:3.11-slim
 
@@ -39,32 +68,3 @@
 # # Use gunicorn with uvicorn workers for production stability.
 # # --timeout 120 prevents 502s when the face model loads on first request.
 # CMD sh -c "gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:${PORT:-8080} --workers 1 --timeout 120 --log-level warning"
-FROM python:3.11-slim
-
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONPATH=/app
-
-WORKDIR /app
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libgl1 \
-    libglib2.0-0 \
-    ffmpeg \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY requirements.txt .
-
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu && \
-    pip install --no-cache-dir -r requirements.txt
-
-# Pre-download face model
-RUN python -c "from facenet_pytorch import InceptionResnetV1; InceptionResnetV1(pretrained='vggface2')" 2>/dev/null || true
-
-COPY . .
-
-EXPOSE 8080
-
-CMD ["sh", "-c", "gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:${PORT:-8080} --workers 1 --timeout 300 --preload --log-level info"]
