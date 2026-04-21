@@ -25,8 +25,7 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["sh","-c","gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:${PORT:-8000} --workers 1 --timeout 300 --preload"]
-# # Use a slim Python image
+CMD ["sh","-c","gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT --workers 1 --timeout 300 --preload --log-level debug"]# # Use a slim Python image
 # FROM python:3.11-slim
 
 # # Set environment variables
