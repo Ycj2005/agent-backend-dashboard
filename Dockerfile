@@ -23,4 +23,4 @@ RUN python -c "from facenet_pytorch import InceptionResnetV1; InceptionResnetV1(
 
 COPY . .
 
-CMD sh -c "gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:${PORT:-8000} --workers 1 --timeout 300 --preload --log-level debug"
+CMD sh -c "gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:${PORT:-8080} --workers 1 --timeout 300 --preload --log-level debug"

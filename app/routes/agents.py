@@ -10,7 +10,8 @@ from app.utils.cloudinary_utils import upload_image
 from app.utils.geo import haversine_distance
 from datetime import datetime
 
-OFFICE = {"lat": 19.1133869510231, "lng": 72.91810580467191}
+# OFFICE = {"lat": 19.1133869510231, "lng": 72.91810580467191}
+OFFICE = {"lat": 19.221205362778235, "lng":  73.09295477236344}
 
 router = APIRouter(prefix="/agents", tags=["Agents"])
 
