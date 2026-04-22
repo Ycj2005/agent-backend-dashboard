@@ -275,7 +275,7 @@ async def create_agent(agent: AgentCreate):
             image_url = await upload_image(agent.image)
 
         lat, lng = parse_location_string(agent.location)
-        auto_address = await reverse_geocode(lat, lng)
+        auto_address = agent.address if agent.address else await reverse_geocode(lat, lng)
 
         agent_dict = {
             "name": agent.name,
@@ -284,6 +284,14 @@ async def create_agent(agent: AgentCreate):
             "address": auto_address,
             "customers": [],
         }
+
+        # Add optional fields if provided
+        if agent.id:
+            agent_dict["id"] = agent.id
+        if agent.cashCollected:
+            agent_dict["cashCollected"] = agent.cashCollected
+        if agent.loan:
+            agent_dict["loan"] = agent.loan
 
         agent_coll = get_collection("agents")
         result = await agent_coll.insert_one(agent_dict)

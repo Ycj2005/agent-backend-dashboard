@@ -41,6 +41,10 @@ class AgentCreate(BaseModel):
     name: str
     image: Optional[str] = None
     location: str
+    id: Optional[str] = None
+    address: Optional[str] = None
+    cashCollected: Optional[str] = None
+    loan: Optional[str] = None
 
 
 class AgentUpdate(BaseModel):
